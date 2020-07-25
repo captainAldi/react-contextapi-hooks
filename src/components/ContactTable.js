@@ -1,0 +1,72 @@
+import React, { useState, useContext } from 'react'
+import { Segment, Table, Button, Icon } from "semantic-ui-react"
+import { ContactContext }  from '../contexts/ContactContext'
+
+export default function ContactTable() {
+  //Subscribe ke state contact dan akses function dispatch
+  const [state, dispatch] = useContext(ContactContext)
+
+  //Deklarasi Variabel Lokal
+  const [selectedId, setSelectedId] = useState();
+
+  //buat function del
+  const deleteConctact = id => {
+    dispatch({
+      type: 'DEL_CONTACT',
+      payload: id
+    })
+  }
+
+  //Invoke function saat delete
+  const onRemoveUser = () => {
+    deleteConctact(selectedId);
+    setSelectedId(null); // Clear selection
+  };
+
+
+  //Buat row table dlu
+  const rows = state.contacts.map(contact => (
+    <Table.Row
+      key={contact.id}
+      onClick={() => setSelectedId(contact.id)}
+      active={contact.id === selectedId}
+    >
+      <Table.Cell>{contact.id}</Table.Cell>
+      <Table.Cell>{contact.name}</Table.Cell>
+      <Table.Cell>{contact.email}</Table.Cell>
+    </Table.Row>
+  ));
+
+  return (
+    <Segment>
+      <Table celled striped selectable>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Id</Table.HeaderCell>
+            <Table.HeaderCell>Name</Table.HeaderCell>
+            <Table.HeaderCell>Email</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>{rows}</Table.Body>
+        <Table.Footer fullWidth>
+          <Table.Row>
+            <Table.HeaderCell />
+            <Table.HeaderCell colSpan="4">
+              <Button
+                floated="right"
+                icon
+                labelPosition="left"
+                color="red"
+                size="small"
+                disabled={!selectedId}
+                onClick={onRemoveUser}
+              >
+                <Icon name="trash" /> Remove User
+              </Button>
+            </Table.HeaderCell>
+          </Table.Row>
+        </Table.Footer>
+      </Table>
+    </Segment>
+  )
+}
